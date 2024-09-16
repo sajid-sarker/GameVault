@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles/styles.css" />
     <style>
         .bg-image {
             background-image: url("./images/cyberpunk.jpeg");
@@ -18,9 +18,13 @@
     </style>
 </head>
 
-<?php include 'navbar.php'; ?>
-
 <body>
+
+    <?php include 'navbar.php'; ?>
+    
+    <!-- Checkout link for test  -->
+    <a href="./checkout.php">checkout</a>
+
     <section id="product" class="bg-image">
     <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-body-primary ">
         
@@ -108,12 +112,12 @@
     </div>
     <div class="b-example-divider mb-0"></div>
     </section>
+    
+    <?php include 'footer.php' ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- <script src="./script.js"></script> -->
 </body>
-
-<?php include 'footer.php' ?>
 
 </html>

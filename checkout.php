@@ -1,3 +1,72 @@
+<?php
+
+include 'config.php';
+session_start();
+
+$user_id = $_SESSION['user_id'];
+
+if(!isset($user_id)){   // Checks if user logged in 
+    header('location: login.php');
+}
+
+if(isset($_POST['order_btn'])){
+
+    // Assigning form data to variables
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $number = $_POST['number'];
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $method = mysqli_real_escape_string($conn, $_POST['method']);
+    $address = mysqli_real_escape_string($conn, 'flat no. '. $_POST['flat'].', '. $_POST['street'].', '. $_POST['city']);
+    $placed_on = date('d-M-Y');
+
+    $cart_total = 0;
+    $cart_products[] = '';  // Array of products
+
+    // Asks for products currently in cart
+    $cart_query = mysqli_query($conn, "SELECT * FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
+    if(mysqli_num_rows($cart_query) > 0){   // If cart is not empty
+
+        // Go thru returned data and 
+        while($cart_item = mysqli_fetch_assoc($cart_query)){    // 
+            $cart_products[] = $cart_item['name'].' ('.$cart_item['quantity'].') ';
+            $sub_total = ($cart_item['price'] * $cart_item['quantity']);
+            $cart_total += $sub_total;
+        }
+    }
+    
+    if(!$cart_products){
+        $total_products = 'None';
+    }
+    else{
+        // implode() concats all arr elements into a str
+        $total_products = implode(', ',$cart_products);
+    }
+
+    // Checking if same order already made before
+    $order_query = mysqli_query($conn, "SELECT * FROM `orders` WHERE name = '$name' AND number = '$number' 
+    AND email = '$email' AND method = '$method' AND address = '$address' AND total_products = '$total_products'
+    AND total_price = '$cart_total'") or die('Query failed');
+
+    if($cart_total == 0){
+        $message[] = 'Your cart is empty';
+    }
+    else{
+        if(mysqli_num_rows($order_query) > 0){
+            $message[] = 'Order already placed!'; 
+        }
+        else{
+            mysqli_query($conn, "INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price, placed_on) 
+            VALUES('$user_id', '$name', '$number', '$email', '$method', '$address', '$total_products', '$cart_total', '$placed_on')") or die('query failed');
+            $message[] = 'Order placed successfully!';
+            // Empty cart once order is placed
+            mysqli_query($conn, "DELETE FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
+        }
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,29 +81,14 @@
     <link rel="stylesheet" href="/styles.css" />
 </head>
 
-<?php include 'navbar.php' ?>
-
 <body class="bg-body-tertiary">
-    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-      <symbol id="check2" viewBox="0 0 16 16">
-        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
-      </symbol>
-      <symbol id="circle-half" viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path>
-      </symbol>
-      <symbol id="moon-stars-fill" viewBox="0 0 16 16">
-        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path>
-        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"></path>
-      </symbol>
-      <symbol id="sun-fill" viewBox="0 0 16 16">
-        <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"></path>
-      </symbol>
-    </svg>
+    
+    <?php include 'navbar.php' ?>
 
     <div class="container">
     <div class="py-5 text-center">
-      <img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-      <h2>Checkout form</h2>
+      <img class="d-block mx-auto mb-4" src="./images/logo.svg" alt="" width="72" height="57">
+      <h3>Checkout</h3>
     </div>
 
     <div class="row g-5">
@@ -45,207 +99,98 @@
         </h4>
         <ul class="list-group mb-3">
             <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-                <h6 class="my-0">Product name</h6>
-                <small class="text-body-secondary">Brief description</small>
-            </div>
+                <div>
+                    <h6 class="my-0">Product name</h6>
+                    <small class="text-body-secondary">Brief description</small>
+                </div>
             <span class="text-body-secondary">$12</span>
             </li>
             <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-                <h6 class="my-0">Second product</h6>
-                <small class="text-body-secondary">Brief description</small>
-            </div>
-            <span class="text-body-secondary">$8</span>
+                <div>
+                    <h6 class="my-0">Second product</h6>
+                    <small class="text-body-secondary">Brief description</small>
+                </div>
+                <span class="text-body-secondary">$8</span>
             </li>
             <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-                <h6 class="my-0">Third item</h6>
-                <small class="text-body-secondary">Brief description</small>
-            </div>
-            <span class="text-body-secondary">$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
-            <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
-                <small>EXAMPLECODE</small>
-            </div>
-            <span class="text-success">−$5</span>
+                <div>
+                    <h6 class="my-0">Third item</h6>
+                    <small class="text-body-secondary">Brief description</small>
+                </div>
+                <span class="text-body-secondary">$5</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-            <span>Total (USD)</span>
-            <strong>$20</strong>
+                <span>Total (USD)</span>
+                <strong>$20</strong>
             </li>
         </ul>
 
-        <form class="card p-2">
-            <div class="input-group">
-            <input type="text" class="form-control" placeholder="Promo code">
-            <button type="submit" class="btn btn-secondary">Redeem</button>
-            </div>
-        </form>
+        <section id="info">
         </div>
         <div class="col-md-7 col-lg-8">
         <h4 class="mb-3">Billing address</h4>
-        <form class="needs-validation" novalidate="">
+        <form class="needs-validation" method="post" action="" novalidate="">
             <div class="row g-3">
-            <div class="col-sm-6">
-                <label for="firstName" class="form-label">First name</label>
-                <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
-                <div class="invalid-feedback">
-                Valid first name is required.
+                <div class="col-sm-6">
+                    <label for="firstName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="firstName" placeholder="Enter your name" value="" required>
+                    <div class="invalid-feedback">
+                    Valid first name is required.
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-sm-6">
-                <label for="lastName" class="form-label">Last name</label>
-                <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
-                <div class="invalid-feedback">
-                Valid last name is required.
+                <div class="col-6">
+                    <label for="number" class="form-label">Phone no.</label>
+                    <input type="tel" class="form-control" id="number" placeholder="Enter your number">
                 </div>
-            </div>
 
-            <div class="col-12">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group has-validation">
-                <span class="input-group-text">@</span>
-                <input type="text" class="form-control" id="username" placeholder="Username" required="">
-                <div class="invalid-feedback">
-                    Your username is required.
+                <div class="col-12">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
                 </div>
-                </div>
-            </div>
 
-            <div class="col-12">
-                <label for="email" class="form-label">Email <span class="text-body-secondary">(Optional)</span></label>
-                <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                <div class="invalid-feedback">
-                Please enter a valid email address for shipping updates.
+                <div class="col-12">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" placeholder="Flat no, House no, Road" required>
                 </div>
-            </div>
 
-            <div class="col-12">
-                <label for="address" class="form-label">Address</label>
-                <input type="text" class="form-control" id="address" placeholder="1234 Main St" required="">
-                <div class="invalid-feedback">
-                Please enter your shipping address.
+                <div class="col-12">
+                    <label for="address2" class="form-label">Address 2</label>
+                    <input type="text" class="form-control" id="address2" placeholder="Sector, Village, etc." required>
                 </div>
-            </div>
 
-            <div class="col-12">
-                <label for="address2" class="form-label">Address 2 <span class="text-body-secondary">(Optional)</span></label>
-                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
-            </div>
-
-            <div class="col-md-5">
-                <label for="country" class="form-label">Country</label>
-                <select class="form-select" id="country" required="">
-                <option value="">Choose...</option>
-                <option>United States</option>
-                </select>
-                <div class="invalid-feedback">
-                Please select a valid country.
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <label for="state" class="form-label">State</label>
-                <select class="form-select" id="state" required="">
-                <option value="">Choose...</option>
-                <option>California</option>
-                </select>
-                <div class="invalid-feedback">
-                Please provide a valid state.
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <label for="zip" class="form-label">Zip</label>
-                <input type="text" class="form-control" id="zip" placeholder="" required="">
-                <div class="invalid-feedback">
-                Zip code required.
-                </div>
-            </div>
             </div>
 
             <hr class="my-4">
 
-            <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="same-address">
-            <label class="form-check-label" for="same-address">Shipping address is the same as my billing address</label>
-            </div>
-
-            <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="save-info">
-            <label class="form-check-label" for="save-info">Save this information for next time</label>
-            </div>
-
-            <hr class="my-4">
-
-            <h4 class="mb-3">Payment</h4>
+            <h4 class="mb-3">Payment method</h4>
 
             <div class="my-3">
-            <div class="form-check">
-                <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked="" required="">
-                <label class="form-check-label" for="credit">Credit card</label>
-            </div>
-            <div class="form-check">
-                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required="">
-                <label class="form-check-label" for="debit">Debit card</label>
-            </div>
-            <div class="form-check">
-                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required="">
-                <label class="form-check-label" for="paypal">PayPal</label>
-            </div>
-            </div>
-
-            <div class="row gy-3">
-            <div class="col-md-6">
-                <label for="cc-name" class="form-label">Name on card</label>
-                <input type="text" class="form-control" id="cc-name" placeholder="" required="">
-                <small class="text-body-secondary">Full name as displayed on card</small>
-                <div class="invalid-feedback">
-                Name on card is required
+                <div class="form-check">
+                    <input id="credit" name="method" type="radio" class="form-check-input" checked="" required="">
+                    <label class="form-check-label" for="bkash">bKash</label>
+                </div>
+                <div class="form-check">
+                    <input id="debit" name="method" type="radio" class="form-check-input" required="">
+                    <label class="form-check-label" for="nagad">Nagad</label>
+                </div>
+                <div class="form-check">
+                    <input id="paypal" name="method" value=""type="radio" class="form-check-input" required="">
+                    <label class="form-check-label" for="cod">Cash on Delivery</label>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <label for="cc-number" class="form-label">Credit card number</label>
-                <input type="text" class="form-control" id="cc-number" placeholder="" required="">
-                <div class="invalid-feedback">
-                Credit card number is required
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <label for="cc-expiration" class="form-label">Expiration</label>
-                <input type="text" class="form-control" id="cc-expiration" placeholder="" required="">
-                <div class="invalid-feedback">
-                Expiration date required
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <label for="cc-cvv" class="form-label">CVV</label>
-                <input type="text" class="form-control" id="cc-cvv" placeholder="" required="">
-                <div class="invalid-feedback">
-                Security code required
-                </div>
-            </div>
-            </div>
-
             <hr class="my-4">
-
-            <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+            <button class="w-100 btn btn-primary btn-lg" name="order_btn" type="submit">Continue to checkout</button>
         </form>
       </div>
     </div>
+    </section>
+    
+    <?php include 'footer.php' ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>
-
-<?php include 'footer.php' ?>
 
 </html>
