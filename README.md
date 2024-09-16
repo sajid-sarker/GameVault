@@ -1,7 +1,10 @@
-# GameVault
-CSE370 Final project: Game Store
+# GameVault - Ecommerce Platform
+CSE370 Final project: Website with CRUD operations
+
 Frontend: HTML, CSS, Bootstrap
+
 Backend: PHP
+
 Database: MySQL
 
 ## How to run the program:
