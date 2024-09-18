@@ -35,22 +35,63 @@ if(isset($_GET['delete_all'])){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="./styles/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="./styles/styles.css" />
 </head>
     
 <body>
 
-   <?php include 'navbar.php' ?>
+  <?php include 'navbar.php' ?>
+
+  <h1 class="text-center mt-3">Cart</h1>
+
+  <section class="shopping-cart">
+
+  <div class="container-fluid">
+    <div class="row mt-5 mx-5 justify-content-center gap-3 row-cols-sm-2 row-cols-md-4">
+      <?php
+        $grand_total = 0;
+        // Get products in user cart
+        $select_cart = mysqli_query($conn, "SELECT * FROM `cart` WHERE user_id = '$user_id'") or die('Query failed');
+        if(mysqli_num_rows($select_cart) > 0){
+          while($fetch_cart = mysqli_fetch_assoc($select_cart)){   
+      ?>
+      <a href="cart.php?delete=<?php echo $fetch_cart['id']; ?>" class="fas fa-times" onclick="return confirm('Delete this from cart?');"></a>
+      <div class="col-md-3 col-sm-6">
+        <div class="card p-2">
+          <img class="card-img-top" src="./images/disc/<?php echo $fetch_products['image']; ?>" alt="<?php echo $fetch_products['name']; ?>">
+          <div class="card-body">
+            <h3 class="card-title"><?php echo $fetch_products['name']; ?></h3>
+            <p class="card-text">$<?php echo $fetch_products['price']; ?></p>
+          </div>
+          <div class="card-body">
+            <form method="post" action="cart.php">
+              <input type="hidden" name="product_id" value="<?php echo $fetch_products['id']; ?>">
+              <button name="buy" type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <?php
+      $grand_total += $sub_total;
+          }
+      }else{
+          echo '<p class="text-center">Your cart is empty</p>';
+      }
+      ?>
+
+  </section>
    
-   <?php include 'footer.php' ?>
+  <?php include 'footer.php' ?>
 </body>
     
 </html>

@@ -21,42 +21,46 @@ if(isset($_GET['delete'])){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>users</title>
-
-   <!-- font awesome cdn link  -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-   <!-- custom admin css file link  -->
-   <link rel="stylesheet" href="styles/admin_style.css">
-
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="./styles/styles.css" />
 </head>
 <body>
    
-<?php include 'admin_header.php'; ?>
+  <?php include 'admin_header.php'; ?>
 
-<section class="users">
+  <section id="users">
 
-   <h1 class="title"> user accounts </h1>
+  <h1 class="text-center my-5">User Accounts</h1>
 
-   <div class="box-container">
+  <div class="container">
+    <div class="row g-4">
       <?php
-         $select_users = mysqli_query($conn, "SELECT * FROM `users`") or die('query failed');
-         while($fetch_users = mysqli_fetch_assoc($select_users)){
+        // Fetch all the users from db
+        $select_users = mysqli_query($conn, "SELECT * FROM `users`") or die('query failed');
+        while($fetch_users = mysqli_fetch_assoc($select_users)){
       ?>
-      <div class="box">
-         <p> user id : <span><?php echo $fetch_users['id']; ?></span> </p>
-         <p> username : <span><?php echo $fetch_users['name']; ?></span> </p>
-         <p> email : <span><?php echo $fetch_users['email']; ?></span> </p>
-         <p> user type : <span style="color:<?php if($fetch_users['user_type'] == 'admin'){ echo 'var(--orange)'; } ?>"><?php echo $fetch_users['user_type']; ?></span> </p>
-         <a href="admin_users.php?delete=<?php echo $fetch_users['id']; ?>" onclick="return confirm('delete this user?');" class="delete-btn">delete user</a>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100"> <!-- Ensure card has full height -->
+          <div class="card-body">
+            <h5 class="card-title">User ID: <?php echo $fetch_users['id']; ?></h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">Username: <?php echo $fetch_users['name']; ?></h6>
+            <p class="card-text">Email: <?php echo $fetch_users['email']; ?></p>
+            <p class="card-text">User type: <span style="color:<?php if($fetch_users['user_type'] == 'admin'){ echo 'orange'; } ?>"><?php echo ucfirst($fetch_users['user_type']); ?></span></p>
+            <a href="admin_users.php?delete=<?php echo $fetch_users['id']; ?>" onclick="return confirm('Delete this user?');" class="btn btn-outline-danger">Delete user</a>
+          </div>
+        </div>
       </div>
       <?php
-         };
+          };
       ?>
-   </div>
 
 </section>
 
