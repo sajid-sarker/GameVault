@@ -44,7 +44,8 @@ if(isset($_GET['delete'])){
   integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="./styles/styles.css" />
 </head>
-<body>
+
+<body >
    
   <?php include 'admin_header.php'; ?>
 
@@ -61,7 +62,7 @@ if(isset($_GET['delete'])){
             while($fetch_orders = mysqli_fetch_assoc($select_orders)){
         ?>
         <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100"> <!-- Ensure card has full height -->
+          <div class="card bg-body-tertiary h-100"> <!-- Ensure card has full height -->
             <div class="card-body">
               <h5 class="card-title">Name: <?php echo $fetch_orders['name']; ?></h5>
               <h6 class="card-subtitle mb-2 text-body-secondary">User ID: <?php echo $fetch_orders['user_id']; ?></h6>
@@ -93,13 +94,12 @@ if(isset($_GET['delete'])){
              echo '<p class="text-center">No orders placed yet</p>';
           }
         ?>
+      </div>
+    </div>
 
   </section>
 
   <?php include 'footer.php'; ?>
-
-  <!-- custom admin js file link  -->
-  <script src="js/admin_script.js"></script>
 
 </body>
 </html>

@@ -48,7 +48,7 @@ if(isset($_GET['delete'])){
         while($fetch_users = mysqli_fetch_assoc($select_users)){
       ?>
       <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100"> <!-- Ensure card has full height -->
+        <div class="card bg-body-tertiary h-100"> <!-- Ensure card has full height -->
           <div class="card-body">
             <h5 class="card-title">User ID: <?php echo $fetch_users['id']; ?></h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">Username: <?php echo $fetch_users['name']; ?></h6>

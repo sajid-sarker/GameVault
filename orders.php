@@ -29,48 +29,50 @@ if(!isset($user_id)){
 <body>
 
   <?php include 'navbar.php' ?>
-  <div class="heading">
-    <h3>your orders</h3>
-</div>
 
-<section class="placed-orders">
 
-  <h1 class="title">Placed orders</h1>
+<section id="placed-orders">
 
-  <div class="box-container">
+  <h1 class="text-center my-5">Placed orders</h1>
 
-    <?php
-      // Get list of ordered
-      $order_query = mysqli_query($conn, "SELECT * FROM `orders` WHERE user_id = '$user_id'") or die('query failed');
-      if(mysqli_num_rows($order_query) > 0){
-        while($fetch_orders = mysqli_fetch_assoc($order_query)){
-    ?>
-    <div class="box">
-        <p> placed on : <span><?php echo $fetch_orders['placed_on']; ?></span> </p>
-        <p> name : <span><?php echo $fetch_orders['name']; ?></span> </p>
-        <p> number : <span><?php echo $fetch_orders['number']; ?></span> </p>
-        <p> email : <span><?php echo $fetch_orders['email']; ?></span> </p>
-        <p> address : <span><?php echo $fetch_orders['address']; ?></span> </p>
-        <p> payment method : <span><?php echo $fetch_orders['method']; ?></span> </p>
-        <p> your orders : <span><?php echo $fetch_orders['total_products']; ?></span> </p>
-        <p> total price : <span>$<?php echo $fetch_orders['total_price']; ?>/-</span> </p>
-        <p> payment status : <span style="color:<?php if($fetch_orders['payment_status'] == 'pending'){ echo 'red'; }else{ echo 'green'; } ?>;"><?php echo $fetch_orders['payment_status']; ?></span> </p>
+  <section id="orders">
+
+    <div class="container">
+      <div class="row g-4">
+        <?php
+          // Fetch all the users from db
+          $order_query = mysqli_query($conn, "SELECT * FROM `orders` WHERE user_id = '$user_id'") or die('query failed');
+          if(mysqli_num_rows($order_query) > 0){
+            while($fetch_orders = mysqli_fetch_assoc($order_query)){
+        ?>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card bg-body-tertiary h-100">
+            <div class="card-body">
+              <h5 class="card-title">Name: <?php echo $fetch_orders['name']; ?></h5>
+              <h6 class="card-subtitle my-2 text-body-secondary">User ID: <?php echo $fetch_orders['user_id']; ?></h6>
+              <p class="card-text">Placed on: <?php echo $fetch_orders['placed_on']; ?></p>
+              <p class="card-text">Phone: <?php echo $fetch_orders['number']; ?></p>
+              <p class="card-text">Email: <?php echo $fetch_orders['email']; ?></p>
+              <p class="card-text">Address: <?php echo $fetch_orders['address']; ?></p>
+              <p class="card-text">Ordered products: <?php echo $fetch_orders['total_products']; ?></p>
+              <p class="card-text">Total price: $<?php echo $fetch_orders['total_price']; ?></p>
+              <p class="card-text">Payment method: <?php echo $fetch_orders['method']; ?></p>
+              <p class="card-text">Payment status : <span style="color:<?php if($fetch_orders['payment_status'] == 'pending'){ echo 'red'; }else{ echo 'green'; } ?>;"><?php echo ucfirst($fetch_orders['payment_status']); ?></span></p>
+            </div>
+          </div>
         </div>
-    <?php
-      }
-    }else{
-        echo '<p class="empty">no orders placed yet!</p>';
-    }
-    ?>
-  </div>
+        <?php
+            }
+          }
+          else{
+            echo '<p class="text-center">No orders placed yet</p>';
+          }
+        ?>
 
-</section>
-
-
-
-
+  </section>
   
   <?php include 'footer.php' ?>
+
 </body>
     
 </html>
