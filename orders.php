@@ -56,8 +56,8 @@ if(!isset($user_id)){
               <p class="card-text">Address: <?php echo $fetch_orders['address']; ?></p>
               <p class="card-text">Ordered products: <?php echo $fetch_orders['total_products']; ?></p>
               <p class="card-text">Total price: $<?php echo $fetch_orders['total_price']; ?></p>
-              <p class="card-text">Payment method: <?php echo $fetch_orders['method']; ?></p>
-              <p class="card-text">Payment status : <span style="color:<?php if($fetch_orders['payment_status'] == 'pending'){ echo 'red'; }else{ echo 'green'; } ?>;"><?php echo ucfirst($fetch_orders['payment_status']); ?></span></p>
+              <p class="card-text">Payment method: <span class="text-capitalize"><?php echo $fetch_orders['method']; ?></span></p>
+              <p class="card-text">Payment status: <span style="color:<?php if($fetch_orders['payment_status'] == 'pending'){ echo 'red'; }else{ echo 'green'; } ?>;"><?php echo ucfirst($fetch_orders['payment_status']); ?></span></p>
             </div>
           </div>
         </div>
