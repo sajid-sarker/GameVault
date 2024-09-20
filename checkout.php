@@ -20,14 +20,14 @@ if(isset($_POST['order_btn'])){
   $placed_on = date('d-M-Y');
 
   $cart_total = 0;
-  $cart_products[] = '';  // Array of products
+  $cart_products = [];  // Array of products
 
   // Asks for products currently in cart
   $cart_query = mysqli_query($conn, "SELECT * FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
   if(mysqli_num_rows($cart_query) > 0){   // If cart is not empty
 
     while($cart_item = mysqli_fetch_assoc($cart_query)){    // 
-      // Go thru returned data and convert to str
+      // Go thru returned data and add to array
       $cart_products[] = $cart_item['name'].' ('.$cart_item['quantity'].') ';
       $sub_total = ($cart_item['price'] * $cart_item['quantity']);
       $cart_total += $sub_total;
