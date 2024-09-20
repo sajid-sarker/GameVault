@@ -171,7 +171,8 @@ if(isset($_POST['update_product'])){
             <div class="col-md-3 col-sm-6">
               <div class="card p-2">
                 <img class="card-img-top" src="./images/disc/<?php echo $fetch_products['image']; ?>" 
-                  alt="<?php echo $fetch_products['name']; ?>">
+                  alt="<?php echo $fetch_products['name']; ?>"
+                  style="object-fit: cover; height: 20rem; width: 100%;">
                 <div class="card-body">
                   <h3 class="card-title"><?php echo $fetch_products['name']; ?></h3>
                   <p class="card-text">$<?php echo $fetch_products['price']; ?></p>
