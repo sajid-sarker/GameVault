@@ -1,4 +1,2 @@
-the_Planthub
-370_project
-
 images/disc/*
+!images/disc/.gitkeep
