@@ -21,9 +21,6 @@ if (session_status() === PHP_SESSION_NONE) {
             <a class="nav-link active" aria-current="page" href="./index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./about.php">About us</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="./products.php">Products</a>
           </li>
       </div>
