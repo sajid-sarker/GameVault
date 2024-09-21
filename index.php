@@ -93,7 +93,7 @@
         <div class="col-lg-6 mx-auto">
           <p class="fs-5 mb-4">Meet new people by joining our community today!</p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" class="btn btn-outline-primary btn-lg px-4 me-sm-3 fw-bold">Join</a>
+            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" target="blank" class="btn btn-outline-primary btn-lg px-4 me-sm-3 fw-bold">Join</a>
           </div>
         </div>
       </div>
